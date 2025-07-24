@@ -1,7 +1,7 @@
 namespace AIMapper.Extensions;
 
 /// <summary>
-/// Kumpulan extension method untuk mapping koleksi dengan filtering atau kondisi tertentu menggunakan AIMapper.
+/// Extension khusus untuk mapping koleksi dengan filtering atau kondisi global menggunakan AIMapper.
 /// </summary>
 public static class ProjectToFilteringExtensions
 {
@@ -42,3 +42,4 @@ public static class ProjectToFilteringExtensions
             : Enumerable.Empty<TDestination>();
     }
 }
+

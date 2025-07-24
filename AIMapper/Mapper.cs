@@ -4,41 +4,21 @@ using System.Reflection;
 namespace AIMapper;
 
 /// <summary>
-/// Implementasi utama AIMapper untuk mapping objek dengan konfigurasi fleksibel, mendukung custom flattening, ignore property, dan injection ke DI.
+/// Implementasi utama AIMapper untuk mapping objek dengan konfigurasi fleksibel,
+/// mendukung custom flattening, ignore property, condition, null substitution, value converter, before/after map, dan reverse map.
 /// </summary>
 public class Mapper : IMapper
 {
-    /// <summary>
-    /// Mapping tipe abstract ke concrete untuk kebutuhan mapping polymorphic.
-    /// </summary>
     private readonly Dictionary<Type, Type> _abstractTypeMappings = new();
-
-    /// <summary>
-    /// Cache delegate mapping hasil kompilasi expression agar performa optimal.
-    /// </summary>
     private readonly Dictionary<(Type, Type), Delegate> _compiledMappingCache = new();
-
-    /// <summary>
-    /// Konfigurasi mapping untuk setiap pasangan type.
-    /// </summary>
     private readonly Dictionary<(Type, Type), object> _configurations = new();
-
-    /// <summary>
-    /// Custom mapping function yang didaftarkan manual untuk kombinasi source-destination tertentu.
-    /// </summary>
     private readonly Dictionary<(Type, Type), Delegate> _customMappings = new();
 
-    /// <summary>
-    /// Registrasi custom mapping function untuk tipe tertentu.
-    /// </summary>
     public void Register<TSource, TDestination>(Func<TSource, TDestination> mapFunc)
     {
         _customMappings[(typeof(TSource), typeof(TDestination))] = mapFunc;
     }
 
-    /// <summary>
-    /// Registrasi mapping dua arah antara dua tipe (forward dan reverse).
-    /// </summary>
     public void RegisterBidirectional<TSource, TDestination>(
         Func<TSource, TDestination> forward,
         Func<TDestination, TSource> reverse)
@@ -47,17 +27,11 @@ public class Mapper : IMapper
         Register(reverse);
     }
 
-    /// <summary>
-    /// Registrasi tipe abstract ke concrete, untuk mendukung mapping polymorphic.
-    /// </summary>
     public void RegisterAbstract<TAbstract, TConcrete>() where TConcrete : TAbstract
     {
         _abstractTypeMappings[typeof(TAbstract)] = typeof(TConcrete);
     }
 
-    /// <summary>
-    /// Konfigurasi mapping secara fluent untuk source dan destination tertentu.
-    /// </summary>
     public void Configure<TSource, TDestination>(Action<MappingConfiguration<TSource, TDestination>> config)
     {
         var cfg = new MappingConfiguration<TSource, TDestination>();
@@ -66,9 +40,13 @@ public class Mapper : IMapper
     }
 
     /// <summary>
-    /// Validasi seluruh konfigurasi mapping yang sudah didaftarkan.
+    /// Method internal untuk langsung mendaftarkan reverse config ke Mapper (tanpa lambda kosong/error).
     /// </summary>
-    /// <exception cref="InvalidOperationException">Dilempar jika konfigurasi tidak sesuai tipe.</exception>
+    internal void RegisterReverseConfig<TSource, TDestination>(MappingConfiguration<TSource, TDestination> config)
+    {
+        _configurations[(typeof(TSource), typeof(TDestination))] = config;
+    }
+
     public void AssertConfigurationIsValid()
     {
         foreach (var ((source, dest), configObj) in _configurations)
@@ -79,14 +57,6 @@ public class Mapper : IMapper
         }
     }
 
-    /// <summary>
-    /// Melakukan mapping objek dari source ke destination type.
-    /// </summary>
-    /// <param name="source">Objek sumber yang akan dimapping</param>
-    /// <typeparam name="TSource">Tipe sumber</typeparam>
-    /// <typeparam name="TDestination">Tipe tujuan</typeparam>
-    /// <returns>Objek hasil mapping</returns>
-    /// <exception cref="ArgumentNullException">Jika source bernilai null</exception>
     public TDestination Map<TSource, TDestination>(TSource source)
     {
         if (source == null)
@@ -105,9 +75,6 @@ public class Mapper : IMapper
         return compiled(source);
     }
 
-    /// <summary>
-    /// Membuat delegate mapping secara dinamis menggunakan expression tree.
-    /// </summary>
     private Func<TSource, TDestination> GenerateCompiledMapping<TSource, TDestination>()
     {
         var sourceType = typeof(TSource);
@@ -161,8 +128,35 @@ public class Mapper : IMapper
                 }
             }
 
-            if (valueExp != null)
+            if (valueExp != null && options?.ConditionFunc != null)
+            {
+                continue; // Akan di-handle di runtime
+            }
+
+            if (valueExp != null && options?.ValueConverter != null)
+            {
+                var converterType = options.ValueConverter.GetType();
+                var destPropType = destProp.PropertyType;
+                var invokeMethod = converterType.GetMethod("Invoke");
+                var srcType = invokeMethod.GetParameters()[0].ParameterType;
+                var converterConst = Expression.Constant(options.ValueConverter);
+                var invokeConverter = Expression.Invoke(converterConst, Expression.Convert(valueExp, srcType));
+                var converterExp = Expression.Convert(invokeConverter, destPropType);
+                bindings.Add(Expression.Bind(destProp, converterExp));
+            }
+            else if (valueExp != null && options?.NullSubstitute != null)
+            {
+                var underlyingType = Nullable.GetUnderlyingType(destProp.PropertyType) ?? destProp.PropertyType;
+                var nullConst = Expression.Constant(null, underlyingType);
+                var substitute = Expression.Convert(Expression.Constant(options.NullSubstitute), destProp.PropertyType);
+                var condition = Expression.Equal(valueExp, nullConst);
+                var coalesce = Expression.Condition(condition, substitute, valueExp);
+                bindings.Add(Expression.Bind(destProp, coalesce));
+            }
+            else if (valueExp != null)
+            {
                 bindings.Add(Expression.Bind(destProp, valueExp));
+            }
         }
 
         Expression body;
@@ -172,12 +166,66 @@ public class Mapper : IMapper
             return src => MapToConstructor<TSource, TDestination>(src);
 
         var lambda = Expression.Lambda<Func<TSource, TDestination>>(body, sourceParam);
-        return lambda.Compile();
+        var compiled = lambda.Compile();
+
+        // Condition/BeforeMap/AfterMap dievaluasi manual di runtime setelah objek terbentuk
+        return (TSource src) =>
+        {
+            var config = GetConfiguration<TSource, TDestination>();
+            var dest = compiled(src);
+
+            // BeforeMap
+            config.BeforeMapAction?.Invoke(src, dest);
+
+            // Condition
+            var props = config.PropertyOptions;
+            foreach (var (propName, opt) in props)
+            {
+                if (opt.ConditionFunc != null)
+                {
+                    var destProp = destinationType.GetProperty(propName);
+                    if (destProp == null) continue;
+
+                    var predicate = opt.ConditionFunc as Func<TSource, TDestination, bool>;
+                    if (predicate != null && predicate(src, dest))
+                    {
+                        object? value = null;
+                        if (opt.CustomPath != null)
+                        {
+                            object? current = src;
+                            foreach (var part in opt.CustomPath.Split('.'))
+                            {
+                                if (current == null) break;
+                                var prop = current.GetType().GetProperty(part);
+                                current = prop?.GetValue(current);
+                            }
+                            value = current;
+                        }
+                        else
+                        {
+                            var match = sourceType.GetProperty(propName);
+                            value = match?.GetValue(src);
+                        }
+                        if (opt.ValueConverter != null && value != null)
+                        {
+                            value = opt.ValueConverter.DynamicInvoke(value);
+                        }
+                        if (value == null && opt.NullSubstitute != null)
+                        {
+                            value = opt.NullSubstitute;
+                        }
+                        destProp.SetValue(dest, value);
+                    }
+                }
+            }
+
+            // AfterMap
+            config.AfterMapAction?.Invoke(src, dest);
+
+            return dest;
+        };
     }
 
-    /// <summary>
-    /// Mengambil konfigurasi mapping untuk source dan destination type tertentu.
-    /// </summary>
     private MappingConfiguration<TSource, TDestination> GetConfiguration<TSource, TDestination>()
     {
         if (_configurations.TryGetValue((typeof(TSource), typeof(TDestination)), out var obj) &&
@@ -186,9 +234,6 @@ public class Mapper : IMapper
         return new MappingConfiguration<TSource, TDestination>();
     }
 
-    /// <summary>
-    /// Mapping menggunakan constructor (jika destination tidak memiliki parameterless constructor).
-    /// </summary>
     private TDestination MapToConstructor<TSource, TDestination>(TSource source)
     {
         var ctor = typeof(TDestination).GetConstructors()
