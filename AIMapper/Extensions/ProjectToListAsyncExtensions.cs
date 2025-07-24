@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AIMapper.Core;
+using Microsoft.EntityFrameworkCore;
 
 namespace AIMapper.Extensions;
 

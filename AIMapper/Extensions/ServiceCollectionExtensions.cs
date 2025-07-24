@@ -1,3 +1,4 @@
+using AIMapper.Core;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AIMapper.Extensions;

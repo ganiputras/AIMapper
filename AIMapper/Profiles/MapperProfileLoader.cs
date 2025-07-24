@@ -1,3 +1,4 @@
+using AIMapper.Core;
 using System.Reflection;
 
 namespace AIMapper.Profiles;

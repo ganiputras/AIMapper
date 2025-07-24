@@ -1,4 +1,4 @@
-namespace AIMapper;
+namespace AIMapper.Core;
 
 /// <summary>
 /// Konfigurasi mapping untuk setiap pasangan type.
@@ -67,4 +67,7 @@ public class MappingConfiguration<TSource, TDestination>
 
         return reverseConfig;
     }
+
+
+
 }

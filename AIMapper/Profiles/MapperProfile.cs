@@ -1,3 +1,5 @@
+using AIMapper.Core;
+
 namespace AIMapper.Profiles;
 
 /// <summary>

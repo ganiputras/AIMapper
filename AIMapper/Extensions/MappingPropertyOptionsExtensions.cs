@@ -1,4 +1,6 @@
-﻿namespace AIMapper.Extensions;
+﻿using AIMapper.Core;
+
+namespace AIMapper.Extensions;
 
 /// <summary>
 /// Extension method agar konfigurasi property mapping lebih fluent (chaining).

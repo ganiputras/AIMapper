@@ -1,4 +1,4 @@
-namespace AIMapper;
+namespace AIMapper.Core;
 
 /// <summary>
 /// Opsi konfigurasi untuk property pada mapping, mendukung ignore, custom path, condition, null substitution, dan value converter.

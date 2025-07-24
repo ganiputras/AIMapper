@@ -1,3 +1,4 @@
+using AIMapper.Core;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -39,9 +40,6 @@ public class Mapper : IMapper
         _configurations[(typeof(TSource), typeof(TDestination))] = cfg;
     }
 
-    /// <summary>
-    /// Method internal untuk langsung mendaftarkan reverse config ke Mapper (tanpa lambda kosong/error).
-    /// </summary>
     internal void RegisterReverseConfig<TSource, TDestination>(MappingConfiguration<TSource, TDestination> config)
     {
         _configurations[(typeof(TSource), typeof(TDestination))] = config;
@@ -95,16 +93,21 @@ public class Mapper : IMapper
             // CustomPath (Override Flattening)
             if (options?.CustomPath != null)
             {
-                Expression current = sourceParam;
+                Expression? current = sourceParam;
                 foreach (var part in options.CustomPath.Split('.'))
                 {
                     var prop = current.Type.GetProperty(part);
                     if (prop == null)
                     {
-                        current = null!;
+                        current = null;
                         break;
                     }
-                    current = Expression.Property(current, prop);
+                    // Cek null pada parent (null-safe flattening)
+                    current = Expression.Condition(
+                        Expression.Equal(current, Expression.Constant(null, current.Type)),
+                        Expression.Default(prop.PropertyType),
+                        Expression.Property(current, prop)
+                    );
                 }
                 valueExp = current;
             }
@@ -177,7 +180,7 @@ public class Mapper : IMapper
             // BeforeMap
             config.BeforeMapAction?.Invoke(src, dest);
 
-            // Condition
+            // Condition (mapping property dengan predicate)
             var props = config.PropertyOptions;
             foreach (var (propName, opt) in props)
             {
@@ -195,7 +198,7 @@ public class Mapper : IMapper
                             object? current = src;
                             foreach (var part in opt.CustomPath.Split('.'))
                             {
-                                if (current == null) break;
+                                if (current == null) break; // Perbaikan: pastikan parent null tidak error
                                 var prop = current.GetType().GetProperty(part);
                                 current = prop?.GetValue(current);
                             }
@@ -206,6 +209,7 @@ public class Mapper : IMapper
                             var match = sourceType.GetProperty(propName);
                             value = match?.GetValue(src);
                         }
+
                         if (opt.ValueConverter != null && value != null)
                         {
                             value = opt.ValueConverter.DynamicInvoke(value);

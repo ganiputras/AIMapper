@@ -1,11 +1,11 @@
-﻿namespace AIMapper.SampleApp.Models;
-
-/// <summary>
-///     Data transfer object (DTO) untuk pengguna, digunakan untuk view atau API response.
-/// </summary>
 public class UserDto
 {
     public int Id { get; set; }
-    public string Name { get; set; } = default!;
-    public string City { get; set; } = default!; // Diambil dari BillingAddress.City (override flattening)
+    public string? Name { get; set; }
+    public string? Email { get; set; }
+    public string? Registered { get; set; }
+    public string? Address { get; set; }
+    public int Status { get; set; }
+    public int Point { get; set; }
+    public bool IsActive { get; set; }
 }

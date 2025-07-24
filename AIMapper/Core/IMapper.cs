@@ -1,4 +1,4 @@
-namespace AIMapper;
+namespace AIMapper.Core;
 
 /// <summary>
 ///     Antarmuka untuk AIMapper, menyediakan berbagai method mapping objek, konfigurasi, dan registrasi custom mapping.

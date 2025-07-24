@@ -1,3 +1,5 @@
+using AIMapper.Core;
+
 namespace AIMapper.Extensions;
 
 /// <summary>
@@ -58,4 +60,7 @@ public static class MapperExtensions
         foreach (var item in source.Where(predicate))
             yield return mapper.Map<TSource, TDestination>(item);
     }
+
+
+
 }
