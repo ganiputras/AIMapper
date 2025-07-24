@@ -1,16 +1,18 @@
 namespace AIMapper;
 
 /// <summary>
-///     Opsi konfigurasi untuk properti tujuan tertentu.
+/// Opsi konfigurasi untuk property pada mapping. 
+/// Mendukung pengabaian (ignore) dan path custom (override flattening).
 /// </summary>
 public class MappingPropertyOptions
 {
-    public bool Ignore { get; set; } = false;
-    public Func<object?, object?>? CustomConverter { get; set; }
-    public Func<object?, bool>? Condition { get; set; }
+    /// <summary>
+    /// True jika property ini ingin diabaikan pada proses mapping.
+    /// </summary>
+    public bool Ignore { get; set; }
 
     /// <summary>
-    ///     Path eksplisit dari properti sumber (contoh: "BillingAddress.City").
+    /// Path custom dari source (misal: "Parent.Child.Name") untuk override flattening property nested.
     /// </summary>
     public string? CustomPath { get; set; }
 }
