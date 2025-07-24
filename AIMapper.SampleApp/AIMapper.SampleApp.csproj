@@ -6,9 +6,9 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
-
 	<ItemGroup>
 		<ProjectReference Include="..\AIMapper\AIMapper.csproj" />
+		<Analyzer Include="..\AIMapper.SourceGenerator\bin\Debug\netstandard2.0\AIMapper.SourceGenerator.dll" />
 	</ItemGroup>
 
 </Project>

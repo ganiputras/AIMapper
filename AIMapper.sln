@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36310.24 d17.14
+VisualStudioVersion = 17.14.36310.24
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIMapper", "AIMapper\AIMapper.csproj", "{AE628E82-B0A8-4D86-86D6-6374071402D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIMapper.SampleApp", "AIMapper.SampleApp\AIMapper.SampleApp.csproj", "{7496FA74-BB38-4F25-B51D-FB33045D1923}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIMapper.SourceGenerator", "AIMapper.SourceGenerator\AIMapper.SourceGenerator.csproj", "{14530FB1-02F4-4F1D-A63C-15499689FA25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{7496FA74-BB38-4F25-B51D-FB33045D1923}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7496FA74-BB38-4F25-B51D-FB33045D1923}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7496FA74-BB38-4F25-B51D-FB33045D1923}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14530FB1-02F4-4F1D-A63C-15499689FA25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14530FB1-02F4-4F1D-A63C-15499689FA25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14530FB1-02F4-4F1D-A63C-15499689FA25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14530FB1-02F4-4F1D-A63C-15499689FA25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,12 @@
 using AIMapper.Core;
-using AIMapper.Extensions; // Pastikan namespace extension Anda di-include
+using AIMapper.Extensions;
+using AIMapper.SampleApp.Models;
+using AIMapper.SampleApp.Models.Generated;
 using Microsoft.Extensions.DependencyInjection;
+
+// Pastikan namespace extension Anda di-include
+
+namespace AIMapper.SampleApp;
 
 class Program
 {
@@ -15,7 +21,20 @@ class Program
         // 2. Ambil IMapper dari DI
         var mapper = provider.GetRequiredService<IMapper>();
 
-        // 3. Jalankan semua demo AIMapper
+        var person = new Person
+        {
+            Id = 1,
+            Name = "Gani",
+            Age = 30
+        };
+
+        // Coba mapping otomatis
+        var dto = person.ToPersonDto(); // <-- HARUS muncul, tidak merah!
+        Console.WriteLine($"{dto.Id} - {dto.Name} - {dto.Age}");
+
+
+
+        //// 3. Jalankan semua demo AIMapper
         await AIMapperSampleDemo.RunAllDemo(mapper);
 
         // Biar console tidak langsung close

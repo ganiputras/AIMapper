@@ -1,3 +1,5 @@
+namespace AIMapper.SampleApp.Models;
+
 public class UserProfile
 {
     public string? Address { get; set; }

@@ -1,8 +1,7 @@
-using AIMapper.Core;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AIMapper;
+namespace AIMapper.Core;
 
 /// <summary>
 /// Implementasi utama AIMapper untuk mapping objek dengan konfigurasi fleksibel,

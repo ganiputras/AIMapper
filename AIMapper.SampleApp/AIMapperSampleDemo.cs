@@ -1,7 +1,8 @@
-
-using AIMapper;
 using AIMapper.Core;
 using AIMapper.Extensions;
+using AIMapper.SampleApp.Models;
+
+namespace AIMapper.SampleApp;
 
 public static class AIMapperSampleDemo
 {
