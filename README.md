@@ -5,7 +5,7 @@
 **Fleksibel, intuitif, dan performa tinggi untuk object mapping di .NET**
 
 [![.NET](https://img.shields.io/badge/.NET-8%2B-blueviolet?style=flat-square)](https://dotnet.microsoft.com/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](https://github.com/ganiputras/AIMapper/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE.txt)
 [![Status: Production Ready](https://img.shields.io/badge/status-production--ready-brightgreen?style=flat-square)](https://www.nuget.org/packages/AIMapper)
 
 ---
@@ -134,4 +134,4 @@ Lihat `AIMapperSampleDemo.cs` di project [AIMapper.SampleApp](https://github.com
 
 ## 📄 Lisensi
 
-Proyek ini menggunakan lisensi [MIT License](https://github.com/ganiputras/AIMapper/blob/main/LICENSE).
+Proyek ini menggunakan lisensi [MIT License](LICENSE.txt).
