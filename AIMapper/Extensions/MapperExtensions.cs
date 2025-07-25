@@ -7,6 +7,7 @@ namespace AIMapper.Extensions;
 /// </summary>
 public static class MapperExtensions
 {
+
     /// <summary>
     /// Melakukan mapping koleksi ke tipe tujuan menggunakan IMapper.
     /// </summary>

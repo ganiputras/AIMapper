@@ -14,6 +14,8 @@ public class Mapper : IMapper
     private readonly Dictionary<(Type, Type), object> _configurations = new();
     private readonly Dictionary<(Type, Type), Delegate> _customMappings = new();
 
+
+
     public void Register<TSource, TDestination>(Func<TSource, TDestination> mapFunc)
     {
         _customMappings[(typeof(TSource), typeof(TDestination))] = mapFunc;
