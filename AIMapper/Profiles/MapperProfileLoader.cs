@@ -1,5 +1,5 @@
-using AIMapper.Core;
 using System.Reflection;
+using AIMapper.Core;
 
 namespace AIMapper.Profiles;
 

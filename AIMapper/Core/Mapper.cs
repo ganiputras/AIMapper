@@ -4,8 +4,9 @@ using System.Reflection;
 namespace AIMapper.Core;
 
 /// <summary>
-/// Implementasi utama AIMapper untuk mapping objek dengan konfigurasi fleksibel,
-/// mendukung custom flattening, ignore property, condition, null substitution, value converter, before/after map, dan reverse map.
+///     Implementasi utama AIMapper untuk mapping objek dengan konfigurasi fleksibel,
+///     mendukung custom flattening, ignore property, condition, null substitution, value converter, before/after map, dan
+///     reverse map.
 /// </summary>
 public class Mapper : IMapper
 {
@@ -13,7 +14,6 @@ public class Mapper : IMapper
     private readonly Dictionary<(Type, Type), Delegate> _compiledMappingCache = new();
     private readonly Dictionary<(Type, Type), object> _configurations = new();
     private readonly Dictionary<(Type, Type), Delegate> _customMappings = new();
-
 
 
     public void Register<TSource, TDestination>(Func<TSource, TDestination> mapFunc)
@@ -39,11 +39,6 @@ public class Mapper : IMapper
         var cfg = new MappingConfiguration<TSource, TDestination>();
         config(cfg);
         _configurations[(typeof(TSource), typeof(TDestination))] = cfg;
-    }
-
-    internal void RegisterReverseConfig<TSource, TDestination>(MappingConfiguration<TSource, TDestination> config)
-    {
-        _configurations[(typeof(TSource), typeof(TDestination))] = config;
     }
 
     public void AssertConfigurationIsValid()
@@ -72,6 +67,11 @@ public class Mapper : IMapper
         var compiled = GenerateCompiledMapping<TSource, TDestination>();
         _compiledMappingCache[key] = compiled;
         return compiled(source);
+    }
+
+    internal void RegisterReverseConfig<TSource, TDestination>(MappingConfiguration<TSource, TDestination> config)
+    {
+        _configurations[(typeof(TSource), typeof(TDestination))] = config;
     }
 
     private Func<TSource, TDestination> GenerateCompiledMapping<TSource, TDestination>()
@@ -103,6 +103,7 @@ public class Mapper : IMapper
                         current = null;
                         break;
                     }
+
                     // Cek null pada parent (null-safe flattening)
                     current = Expression.Condition(
                         Expression.Equal(current, Expression.Constant(null, current.Type)),
@@ -110,6 +111,7 @@ public class Mapper : IMapper
                         Expression.Property(current, prop)
                     );
                 }
+
                 valueExp = current;
             }
             else
@@ -119,7 +121,6 @@ public class Mapper : IMapper
                 if (match != null)
                     valueExp = Expression.Property(sourceParam, match);
                 else
-                {
                     foreach (var parent in sourceProps)
                     {
                         var nested = parent.PropertyType.GetProperty(destProp.Name);
@@ -129,13 +130,9 @@ public class Mapper : IMapper
                             break;
                         }
                     }
-                }
             }
 
-            if (valueExp != null && options?.ConditionFunc != null)
-            {
-                continue; // Akan di-handle di runtime
-            }
+            if (valueExp != null && options?.ConditionFunc != null) continue; // Akan di-handle di runtime
 
             if (valueExp != null && options?.ValueConverter != null)
             {
@@ -173,7 +170,7 @@ public class Mapper : IMapper
         var compiled = lambda.Compile();
 
         // Condition/BeforeMap/AfterMap dievaluasi manual di runtime setelah objek terbentuk
-        return (TSource src) =>
+        return src =>
         {
             var config = GetConfiguration<TSource, TDestination>();
             var dest = compiled(src);
@@ -184,7 +181,6 @@ public class Mapper : IMapper
             // Condition (mapping property dengan predicate)
             var props = config.PropertyOptions;
             foreach (var (propName, opt) in props)
-            {
                 if (opt.ConditionFunc != null)
                 {
                     var destProp = destinationType.GetProperty(propName);
@@ -203,6 +199,7 @@ public class Mapper : IMapper
                                 var prop = current.GetType().GetProperty(part);
                                 current = prop?.GetValue(current);
                             }
+
                             value = current;
                         }
                         else
@@ -212,17 +209,11 @@ public class Mapper : IMapper
                         }
 
                         if (opt.ValueConverter != null && value != null)
-                        {
                             value = opt.ValueConverter.DynamicInvoke(value);
-                        }
-                        if (value == null && opt.NullSubstitute != null)
-                        {
-                            value = opt.NullSubstitute;
-                        }
+                        if (value == null && opt.NullSubstitute != null) value = opt.NullSubstitute;
                         destProp.SetValue(dest, value);
                     }
                 }
-            }
 
             // AfterMap
             config.AfterMapAction?.Invoke(src, dest);

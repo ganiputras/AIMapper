@@ -1,7 +1,7 @@
 namespace AIMapper.Core;
 
 /// <summary>
-/// Konfigurasi mapping untuk setiap pasangan type.
+///     Konfigurasi mapping untuk setiap pasangan type.
 /// </summary>
 public class MappingConfiguration<TSource, TDestination>
 {
@@ -39,8 +39,8 @@ public class MappingConfiguration<TSource, TDestination>
     }
 
     /// <summary>
-    /// Membalik konfigurasi mapping: otomatis buat mapping dari destination ke source,
-    /// dan mendaftarkan ke instance Mapper (reverse mapping langsung aktif).
+    ///     Membalik konfigurasi mapping: otomatis buat mapping dari destination ke source,
+    ///     dan mendaftarkan ke instance Mapper (reverse mapping langsung aktif).
     /// </summary>
     /// <param name="mapper">Instance Mapper untuk mendaftarkan reverse mapping.</param>
     /// <returns>Instance MappingConfiguration dari destination ke source (reverse).</returns>
@@ -56,7 +56,7 @@ public class MappingConfiguration<TSource, TDestination>
             var reverseOption = new MappingPropertyOptions
             {
                 Ignore = opt.Ignore,
-                NullSubstitute = opt.NullSubstitute,
+                NullSubstitute = opt.NullSubstitute
                 // Catatan: CustomPath/ValueConverter tidak otomatis dibalik
             };
             reverseConfig.PropertyOptions[propName] = reverseOption;
@@ -67,7 +67,4 @@ public class MappingConfiguration<TSource, TDestination>
 
         return reverseConfig;
     }
-
-
-
 }

@@ -3,13 +3,12 @@ using AIMapper.Core;
 namespace AIMapper.Extensions;
 
 /// <summary>
-/// Kumpulan extension method untuk proses mapping koleksi menggunakan AIMapper.
+///     Kumpulan extension method untuk proses mapping koleksi menggunakan AIMapper.
 /// </summary>
 public static class MapperExtensions
 {
-
     /// <summary>
-    /// Melakukan mapping koleksi ke tipe tujuan menggunakan IMapper.
+    ///     Melakukan mapping koleksi ke tipe tujuan menggunakan IMapper.
     /// </summary>
     /// <typeparam name="TSource">Tipe source data.</typeparam>
     /// <typeparam name="TDestination">Tipe destination hasil mapping.</typeparam>
@@ -25,7 +24,7 @@ public static class MapperExtensions
     }
 
     /// <summary>
-    /// Melakukan mapping koleksi hanya jika kondisi terpenuhi.
+    ///     Melakukan mapping koleksi hanya jika kondisi terpenuhi.
     /// </summary>
     /// <typeparam name="TSource">Tipe source data.</typeparam>
     /// <typeparam name="TDestination">Tipe destination hasil mapping.</typeparam>
@@ -45,7 +44,7 @@ public static class MapperExtensions
     }
 
     /// <summary>
-    /// Melakukan mapping koleksi dengan filter berdasarkan predicate.
+    ///     Melakukan mapping koleksi dengan filter berdasarkan predicate.
     /// </summary>
     /// <typeparam name="TSource">Tipe source data.</typeparam>
     /// <typeparam name="TDestination">Tipe destination hasil mapping.</typeparam>
@@ -61,7 +60,4 @@ public static class MapperExtensions
         foreach (var item in source.Where(predicate))
             yield return mapper.Map<TSource, TDestination>(item);
     }
-
-
-
 }

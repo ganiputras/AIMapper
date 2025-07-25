@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 namespace AIMapper.Extensions;
 
 /// <summary>
-/// Extension method untuk mapping koleksi dengan hasil asynchronous (array, first, dsb).
+///     Extension method untuk mapping koleksi dengan hasil asynchronous (array, first, dsb).
 /// </summary>
 public static class ProjectToAsyncExtensions
 {
     /// <summary>
-    /// Mapping IQueryable ke array hasil mapping secara async.
+    ///     Mapping IQueryable ke array hasil mapping secara async.
     /// </summary>
     public static async Task<TDestination[]> ProjectToArrayAsync<TSource, TDestination>(
         this IQueryable<TSource> query,
@@ -20,7 +20,7 @@ public static class ProjectToAsyncExtensions
     }
 
     /// <summary>
-    /// Mapping IEnumerable ke array hasil mapping secara async.
+    ///     Mapping IEnumerable ke array hasil mapping secara async.
     /// </summary>
     public static Task<TDestination[]> ProjectToArrayAsync<TSource, TDestination>(
         this IEnumerable<TSource> source,
@@ -31,7 +31,7 @@ public static class ProjectToAsyncExtensions
     }
 
     /// <summary>
-    /// Mapping IQueryable, ambil satu hasil pertama (atau null) secara async.
+    ///     Mapping IQueryable, ambil satu hasil pertama (atau null) secara async.
     /// </summary>
     public static async Task<TDestination?> ProjectToFirstOrDefaultAsync<TSource, TDestination>(
         this IQueryable<TSource> query,
@@ -42,7 +42,7 @@ public static class ProjectToAsyncExtensions
     }
 
     /// <summary>
-    /// Mapping IEnumerable, ambil satu hasil pertama (atau null) secara async.
+    ///     Mapping IEnumerable, ambil satu hasil pertama (atau null) secara async.
     /// </summary>
     public static Task<TDestination?> ProjectToFirstOrDefaultAsync<TSource, TDestination>(
         this IEnumerable<TSource> source,

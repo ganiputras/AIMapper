@@ -1,6 +1,7 @@
 // ============================================
 //  AIMapper - Source Generator Lengkap (All Features Final & Fixed)
 // ============================================
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -12,9 +13,9 @@ using System.Text;
 namespace AIMapper.SourceGenerator.Mappers;
 
 /// <summary>
-/// Source generator untuk menghasilkan metode mapping otomatis dari class sumber ke class tujuan.
-/// Mendukung fitur lengkap: override properti, null substitute, converter, condition, flattening,
-/// reverse mapping, dan mapping koleksi.
+///     Source generator untuk menghasilkan metode mapping otomatis dari class sumber ke class tujuan.
+///     Mendukung fitur lengkap: override properti, null substitute, converter, condition, flattening,
+///     reverse mapping, dan mapping koleksi.
 /// </summary>
 [Generator]
 public class MappingGenerator : ISourceGenerator
@@ -50,7 +51,10 @@ internal class MapSyntaxReceiver : ISyntaxReceiver
 
 internal static class SymbolExtensions
 {
-    public static bool CanRead(this IPropertySymbol prop) => prop.GetMethod != null && prop.DeclaredAccessibility == Accessibility.Public;
+    public static bool CanRead(this IPropertySymbol prop)
+    {
+        return prop.GetMethod != null && prop.DeclaredAccessibility == Accessibility.Public;
+    }
 
     public static IEnumerable<IPropertySymbol> GetFlattenableProperties(this ITypeSymbol type)
     {
@@ -105,9 +109,10 @@ internal class MappingBuilder
                 sb.AppendLine("            if (source == null) throw new ArgumentNullException(nameof(source));");
                 sb.AppendLine($"            var target = new {destName}();");
 
-                foreach (var destProp in destType.GetMembers().OfType<IPropertySymbol>().Where(p => p.SetMethod != null))
+                foreach (var destProp in destType.GetMembers().OfType<IPropertySymbol>()
+                             .Where(p => p.SetMethod != null))
                 {
-                    IPropertySymbol? srcProp = sourceSymbol.GetMembers().OfType<IPropertySymbol>()
+                    var srcProp = sourceSymbol.GetMembers().OfType<IPropertySymbol>()
                         .FirstOrDefault(p => p.Name == destProp.Name);
 
                     string? converter = null;
@@ -116,8 +121,8 @@ internal class MappingBuilder
 
                     if (srcProp != null)
                     {
-                        foreach (var attrProp in srcProp.GetAttributes().Where(a => a.AttributeClass?.Name == "MapAttribute"))
-                        {
+                        foreach (var attrProp in srcProp.GetAttributes()
+                                     .Where(a => a.AttributeClass?.Name == "MapAttribute"))
                             foreach (var arg in attrProp.NamedArguments)
                             {
                                 if (arg.Key == "Converter" && arg.Value.Value is INamedTypeSymbol c)
@@ -127,14 +132,14 @@ internal class MappingBuilder
                                 if (arg.Key == "Condition" && arg.Value.Value is INamedTypeSymbol d)
                                     condition = d.ToDisplayString();
                             }
-                        }
 
-                        string srcAccess = $"source.{srcProp.Name}";
-                        string assignment = converter != null ? $"{converter}.Convert({srcAccess})" : srcAccess;
+                        var srcAccess = $"source.{srcProp.Name}";
+                        var assignment = converter != null ? $"{converter}.Convert({srcAccess})" : srcAccess;
                         if (nullSubstitute != null)
                             assignment = $"{assignment} ?? {nullSubstitute}";
 
-                        var line = $"target.{destProp.Name} = {assignment};";
+                        var cast = destProp.Type.ToDisplayString(); // misalnya "string"
+                        var line = $"target.{destProp.Name} = ({cast})({assignment});";
 
                         if (condition != null)
                             sb.AppendLine($"            if ({condition}.ShouldMap(source, target)) {{ {line} }}");
@@ -144,15 +149,19 @@ internal class MappingBuilder
                     else
                     {
                         // Flattening
-                        foreach (var nested in sourceSymbol.GetMembers().OfType<IPropertySymbol>().Where(p => p.Type.TypeKind == TypeKind.Class))
+                        foreach (var nested in sourceSymbol.GetMembers().OfType<IPropertySymbol>()
+                                     .Where(p => p.Type.TypeKind == TypeKind.Class))
                         {
                             var match = nested.Type.GetFlattenableProperties()
-                                .FirstOrDefault(p => p.Name == destProp.Name && p.Type.Equals(destProp.Type, SymbolEqualityComparer.Default));
+                                .FirstOrDefault(p =>
+                                    p.Name == destProp.Name &&
+                                    p.Type.Equals(destProp.Type, SymbolEqualityComparer.Default));
                             if (match != null)
                             {
                                 sb.AppendLine($"            if (source.{nested.Name} != null)");
                                 sb.AppendLine("            {");
-                                sb.AppendLine($"                target.{destProp.Name} = source.{nested.Name}.{match.Name};");
+                                sb.AppendLine(
+                                    $"                target.{destProp.Name} = source.{nested.Name}.{match.Name};");
                                 sb.AppendLine("            }");
                                 break;
                             }

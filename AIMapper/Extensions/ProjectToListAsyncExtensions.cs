@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 namespace AIMapper.Extensions;
 
 /// <summary>
-/// Extension method untuk melakukan mapping koleksi ke List hasil mapping secara asynchronous.
+///     Extension method untuk melakukan mapping koleksi ke List hasil mapping secara asynchronous.
 /// </summary>
 public static class ProjectToListAsyncExtensions
 {
     /// <summary>
-    /// Melakukan mapping koleksi IQueryable ke tipe tujuan dan mengembalikan hasil sebagai List secara asynchronous.
-    /// Cocok untuk penggunaan dengan EF Core (database).
+    ///     Melakukan mapping koleksi IQueryable ke tipe tujuan dan mengembalikan hasil sebagai List secara asynchronous.
+    ///     Cocok untuk penggunaan dengan EF Core (database).
     /// </summary>
     /// <typeparam name="TSource">Tipe data source (entity).</typeparam>
     /// <typeparam name="TDestination">Tipe data tujuan (DTO/model).</typeparam>
@@ -26,8 +26,8 @@ public static class ProjectToListAsyncExtensions
     }
 
     /// <summary>
-    /// Melakukan mapping koleksi IEnumerable ke tipe tujuan dan mengembalikan hasil sebagai List secara asynchronous.
-    /// Untuk source yang sudah in-memory, extension tetap async agar simetris dengan penggunaan IQueryable.
+    ///     Melakukan mapping koleksi IEnumerable ke tipe tujuan dan mengembalikan hasil sebagai List secara asynchronous.
+    ///     Untuk source yang sudah in-memory, extension tetap async agar simetris dengan penggunaan IQueryable.
     /// </summary>
     /// <typeparam name="TSource">Tipe data source.</typeparam>
     /// <typeparam name="TDestination">Tipe data tujuan.</typeparam>

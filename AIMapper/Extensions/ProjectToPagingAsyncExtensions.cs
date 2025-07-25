@@ -1,16 +1,16 @@
+using System.Linq.Expressions;
 using AIMapper.Core;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace AIMapper.Extensions;
 
 /// <summary>
-/// Extension method untuk mapping koleksi secara async: paging, count, dan filter.
+///     Extension method untuk mapping koleksi secara async: paging, count, dan filter.
 /// </summary>
 public static class ProjectToPagingAsyncExtensions
 {
     /// <summary>
-    /// Paging dan mapping IQueryable ke PagedList (List hasil dan total count) secara async.
+    ///     Paging dan mapping IQueryable ke PagedList (List hasil dan total count) secara async.
     /// </summary>
     public static async Task<PagedListResult<TDestination>> ProjectToPagedListAsync<TSource, TDestination>(
         this IQueryable<TSource> query,
@@ -25,7 +25,7 @@ public static class ProjectToPagingAsyncExtensions
     }
 
     /// <summary>
-    /// Paging dan mapping IEnumerable ke PagedList (in-memory, tanpa async DB).
+    ///     Paging dan mapping IEnumerable ke PagedList (in-memory, tanpa async DB).
     /// </summary>
     public static Task<PagedListResult<TDestination>> ProjectToPagedListAsync<TSource, TDestination>(
         this IEnumerable<TSource> source,
@@ -41,7 +41,7 @@ public static class ProjectToPagingAsyncExtensions
     }
 
     /// <summary>
-    /// Menghitung jumlah hasil mapping (count) secara async dari IQueryable.
+    ///     Menghitung jumlah hasil mapping (count) secara async dari IQueryable.
     /// </summary>
     public static Task<int> ProjectToCountAsync<TSource, TDestination>(
         this IQueryable<TSource> query,
@@ -52,7 +52,7 @@ public static class ProjectToPagingAsyncExtensions
     }
 
     /// <summary>
-    /// Menghitung jumlah hasil mapping (count) secara async dari IEnumerable.
+    ///     Menghitung jumlah hasil mapping (count) secara async dari IEnumerable.
     /// </summary>
     public static Task<int> ProjectToCountAsync<TSource, TDestination>(
         this IEnumerable<TSource> source,
@@ -63,7 +63,7 @@ public static class ProjectToPagingAsyncExtensions
     }
 
     /// <summary>
-    /// Mapping IQueryable dengan filter predicate expression (async, tetap IQueryable).
+    ///     Mapping IQueryable dengan filter predicate expression (async, tetap IQueryable).
     /// </summary>
     public static async Task<List<TDestination>> ProjectToWhereAsync<TSource, TDestination>(
         this IQueryable<TSource> query,
@@ -75,7 +75,7 @@ public static class ProjectToPagingAsyncExtensions
     }
 
     /// <summary>
-    /// Mapping IEnumerable dengan filter predicate (in-memory).
+    ///     Mapping IEnumerable dengan filter predicate (in-memory).
     /// </summary>
     public static Task<List<TDestination>> ProjectToWhereAsync<TSource, TDestination>(
         this IEnumerable<TSource> source,
@@ -87,4 +87,3 @@ public static class ProjectToPagingAsyncExtensions
         return Task.FromResult(data);
     }
 }
-

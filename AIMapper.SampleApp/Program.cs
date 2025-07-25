@@ -1,44 +1,35 @@
-using AIMapper.Core;
+﻿using AIMapper.Core;
 using AIMapper.Extensions;
-using AIMapper.SampleApp.Models;
-using AIMapper.SampleApp.Models.Generated;
+using AIMapper.SampleApp;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text;
 
-// Pastikan namespace extension Anda di-include
+Console.OutputEncoding = Encoding.UTF8;
 
-namespace AIMapper.SampleApp;
+Console.WriteLine("===== AIMapper SampleApp =====\n");
 
-class Program
-{
-    static async Task Main(string[] args)
-    {
-        // 1. Setup DI/ServiceCollection (optional, best practice)
-        var services = new ServiceCollection();
-        services.AddAIMapper(); // Extension Anda
+/// <summary>
+/// 🔧 Setup dependency injection dan registrasi IMapper dari AIMapper.Core
+/// </summary>
+var services = new ServiceCollection();
+services.AddAIMapper(); // Registrasi AIMapper melalui extension
+var provider = services.BuildServiceProvider();
+var mapper = provider.GetRequiredService<IMapper>();
 
-        var provider = services.BuildServiceProvider();
+/// <summary>
+/// ⚡ Demo 1: Mapping Guest → GuestDto menggunakan Source Generator
+/// - Fitur yang dites: TargetProperty, NullSubstitute, Converter, Condition, Flattening
+/// </summary>
+GuestGeneratorDemo.Run();
 
-        // 2. Ambil IMapper dari DI
-        var mapper = provider.GetRequiredService<IMapper>();
+/// <summary>
+/// ⚡ Demo 2: Mapping List<Person> → List<PersonDto> menggunakan Source Generator
+/// - Fitur yang dites: Mapping koleksi otomatis (MapList), auto-matching property
+/// </summary>
+PersonGeneratorDemo.Run();
 
-        var person = new Person
-        {
-            Id = 1,
-            Name = "Gani",
-            Age = 30
-        };
-
-        // Coba mapping otomatis
-        var dto = person.ToPersonDto(); // <-- HARUS muncul, tidak merah!
-        Console.WriteLine($"{dto.Id} - {dto.Name} - {dto.Age}");
-
-
-
-        //// 3. Jalankan semua demo AIMapper
-        await AIMapperSampleDemo.RunAllDemo(mapper);
-
-        // Biar console tidak langsung close
-        Console.WriteLine("Selesai. Tekan Enter untuk keluar.");
-        Console.ReadLine();
-    }
-}
+/// <summary>
+/// 🧠 Demo 3: Mapping User → UserDto menggunakan konfigurasi manual (IMapper.Configure)
+/// - Fitur yang dites: Ignore, CustomPath, Condition, NullSubstitute, ValueConverter, BeforeMap, AfterMap, ReverseMap, Collection Mapping, Paging
+/// </summary>
+await UserManualMapperDemo.Run(mapper);
