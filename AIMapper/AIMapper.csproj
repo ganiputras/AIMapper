@@ -1,14 +1,61 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<!-- Target Framework -->
+		<TargetFramework>net8.0</TargetFramework>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.18" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
-  </ItemGroup>
+		<!-- Build & Packaging -->
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\AIMapper.xml</DocumentationFile>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+		<!-- NuGet Metadata -->
+		<PackageId>AIMapper</PackageId>
+		<Version>1.0.0</Version>
+		<Title>AIMapper</Title>
+		<Authors>Gani Putras</Authors>
+		<Company>Ganiputras</Company>
+		<Description>Powerful, AutoMapper-like object mapper with override flattening, attributes, and high performance.</Description>
+		<PackageTags>mapper;automapper;flattening;attributes;object mapping</PackageTags>
+		<RepositoryUrl>https://github.com/ganiputras/AIMapper</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageProjectUrl>https://github.com/ganiputras/AIMapper</PackageProjectUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageIcon>logo.png</PackageIcon>
+		<PackageReadmeFile>readme.md</PackageReadmeFile>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<Copyright>Copyright © 2025 Gani Putras</Copyright>
+
+		<!-- Release Notes -->
+		<PackageReleaseNotes>
+			<![CDATA[
+Versi 1.0.0 AIMapper:
+- Support untuk mapping berbasis atribut
+- Flattening dan unflattening property kompleks
+- NullSubstitute, Condition, dan Converter berbasis MapAttribute
+- Nama class dan interface konsisten dengan AutoMapper
+]]>
+		</PackageReleaseNotes>
+
+		<!-- Code Quality -->
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<!-- Files to Pack (Required by NuGet for icon/readme/license) -->
+	<ItemGroup>
+		<None Include="logo.png" Pack="true" PackagePath="" />
+		<None Include="readme.md" Pack="true" PackagePath="" />
+		<None Include="license.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+
+	<!-- NuGet Dependencies -->
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+	</ItemGroup>
 
 </Project>
